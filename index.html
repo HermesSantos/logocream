@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="./style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-light">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="index.html">LogoCream</a>
+      </div>
+    </nav>
+    <div class="main">
+      <img src="logo.jpeg" height="200">
+      <h1>LogoCream</h1>
+      <div class="button">
+        <button onclick="test()" class="button-submit">Generate Ideas</button>
+      </div>
+      <div class="idea" id="idea">
+        <label for="">Cores</label>
+        <p id="company_colors"></p>
+        <label for="">Nome</label>
+        <p id="company_name"></p>
+        <label for="">Segment</label>
+        <p id="company_segment"></p>
+        <label for="">Propósito</label>
+        <p id="company_purpose"></p>
+        <label for="">Audiência</label>
+        <p id="target_audience"></p>
+      </div>
+    </div>
+    <div class="container">
+      <footer class="py-3 my-4">
+        <p class="text-center text-body-secondary">©2024 Made by <a href="https://www.linkedin.com/in/hermes-santos-8596031a0" target="_blank">Hermes</a></p>
+      </footer>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+    <script>
+      async function test() {
+        const apiKey = "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"
+        const url = "https://api.groq.com/openai/v1/chat/completions"
+        const data = {
+          messages: [
+            {
+              role: "user",
+              content: `me dê apenas um json, sem informação adicional, por favor, não adicione nenhum texto fora do JSON, que contenha a estrutura:
+                          {
+                          company_segment,
+                          company_colors (nome da cor em portugues),
+                          company_name,
+                          company_purpose,
+                          target_audience
+                          }
+                        preenchidos com informações em portugues e falsas, o company_name precisa ser abstrato ou composto com palavras em portugues ou ingles, não se esqueça de fechar as cahves do json`
+            }
+          ],
+          model: "llama3-8b-8192"
+        };
+        try {
+          const response = await fetch(url, {
+            method: "POST",
+            headers: {
+              "Authorization": `Bearer ${apiKey}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+          });
+
+          if (!response.ok) {
+            throw new Error(`Error: ${response.statusText}`);
+          }
+
+          const result = await response.json();
+          let final_data;
+          if (result.choices[0].message.content.endsWith('}')) {
+            final_data = JSON.parse(result.choices[0].message.content);
+          } else {
+            final_data = JSON.parse(result.choices[0].message.content += '}');
+          }
+
+
+          document.getElementById("company_name").innerHTML = final_data.company_name;
+          document.getElementById("company_colors").innerHTML = final_data.company_colors;
+          document.getElementById("company_segment").innerHTML = final_data.company_segment;
+          document.getElementById("company_purpose").innerHTML = final_data.company_purpose;
+          document.getElementById("target_audience").innerHTML = final_data.target_audience;
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    </script>
+  </body>
+  <style>
+  body {
+  font-family: 'Fredoka', sans-serif;
+  height: 100vh;
+  font-weight: 900;
+  background-color: #c5f1fe !important;
+  }
+  .main{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 80%;
+  width: 100%;
+  }
+  .button {
+  margin-bottom: 1%;
+  background: #f1f1f1;
+  }
+  .button-submit{
+  background-color: #3DD1E7;
+  border: 0 solid #E5E7EB;
+  box-sizing: border-box;
+  color: #000000;
+  display: flex;
+  font-family: ui-sans-serif, system-ui, -apple-system, system-ui, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  font-size: 1rem;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1.75rem;
+  padding: .75rem 1.65rem;
+  position: relative;
+  text-align: center;
+  text-decoration: none #000000 solid;
+  text-decoration-thickness: auto;
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  cursor: pointer;
+  transform: rotate(-2deg);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  }
+  .button-submit:after{
+  content: '';
+  position: absolute;
+  border: 1px solid #000000;
+  bottom: 4px;
+  left: 4px;
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+  }
+  .button-submit:after:hover{
+
+  }
+  .idea{
+  height: 80%;
+  width: 20%;
+  background: #fff;
+  border-radius: 20px;
+  border: 3px solid #8992ef;
+  padding: 1%;
+  }
+  </style>
+</html>
